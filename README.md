@@ -11,5 +11,6 @@ By <a href="https://adityad.me/" target="_blank">Aditya Desai</a>.<br>
 4. Bootstrap: getbootstrap.com
 
 ## Demo
-[Click here](https://adi0-jswapp.netlify.app/)https://adi0-jswapp.netlify.app/
-[or here](https://go.lynkr.org/adiwt)https://go.lynkr.org/adiwt
+[Click here (https://adi0-jswapp.netlify.app/)](https://adi0-jswapp.netlify.app/)
+
+[or here (https://go.lynkr.org/adiwt)](https://go.lynkr.org/adiwt)
