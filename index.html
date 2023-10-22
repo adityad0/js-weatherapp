@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather APP</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    </head>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 300,
+            'GRAD' -25,
+            'opsz' 24
+        }
+        * {
+            color: #E0E1DD;
+        }
+        body {
+            background-color: #0D1B2A;
+        }
+        input {
+            background-color: transparent;
+        }
+        .card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+            /* background-color: transparent; */
+            background: rgba(255, 255, 255, 0.1);
+            color: #E0E1DD;
+        }
+        .card-header {
+            border-bottom: 1px solid rgba(224, 225, 221, 0.5);
+        }
+        .leaflet-popup-content {
+            color: black;
+        }
+        .value-item-right {
+            float: right;
+        }
+        a {
+            color: #E0E1DD;
+        }
+        .currentConditionsCard_itemHeader {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+    </style>
+    <body>
+        <br><br>
+        <div class="container">
+            <h1>Weather APP <span id="emojiSpan"></span></h1>
+            <hr>
+            <!-- <form method="GET"> -->
+                <div class="input-group mb-3">
+                    <input type="text" name="location" id="location" class="form-control" placeholder="Location (City/Country/State/Province)" aria-label="Username">
+                    <button type="button" class="btn btn-primary" style="display: flex; align-items: center;" onclick="getWeather();">
+                        <span class="material-symbols-outlined">search</span>&nbsp;Search
+                    </button>
+                </div>
+            <!-- </form> -->
+            <h2>Weather for <span id="location_name_title" class="location_name">loading..</span></h2>
+            <br>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Map</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="map" style="min-height: 250px;"></div>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <div class="col-sm">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Current condition</h5>
+                        </div>
+                        <div class="card-body" style="min-height: 280px;">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="currentConditionsCard_itemHeader"><span class="material-symbols-outlined">device_thermostat</span>&nbsp;Temperature</h5>
+                                </div>
+                                <div class="col"><span id="current_temp" class="current_temp value-item-right">Loading..</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="currentConditionsCard_itemHeader"><span class="material-symbols-outlined">ar_on_you</span>&nbsp;Feels like</h5>
+                                </div>
+                                <div class="col"><span id="current_FeelsLike" class="value-item-right">Loading..</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="currentConditionsCard_itemHeader"><span class="material-symbols-outlined">humidity_mid</span>&nbsp;Humidity</h5>
+                                </div>
+                                <div class="col"><span id="current_humidity" class="value-item-right">Loading..</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="currentConditionsCard_itemHeader"><span class="material-symbols-outlined">air</span>&nbsp;Wind</h5>
+                                </div>
+                                <div class="col"><span id="current_wind" class="value-item-right">Loading..</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="currentConditionsCard_itemHeader"><span class="material-symbols-outlined">visibility</span>&nbsp;Visibility</h5>
+                                </div>
+                                <div class="col"><span id="current_visibility" class="value-item-right">Loading..</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="currentConditionsCard_itemHeader"><span class="material-symbols-outlined">rainy</span>&nbsp;Precipitation</h5>
+                                </div>
+                                <div class="col"><span id="current_precipMM" class="value-item-right">Loading..</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <div class="col-sm">
+                    <div class="card">
+                        <div class="card-body" style="min-height: 280px;">
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="location_name">City, Region, Country</h4>
+                                </div>
+                                <div class="col">
+                                    <h3 class="current_temp text-secondary value-item-right">Temp</h3>
+                                </div>
+                            </div>
+                            <br><br>
+                            <div class="row">
+                                <div class="col text-center">
+                                    <h3 id="currentWeatherDescription" class="text-secondary">✨</h3>
+                                </div>
+                            </div>
+                            <br><br>
+                            <div class="row">
+                                <div class="col text-center">
+                                    <h5 id="currentLocalDateTime">⏰</h5>
+                                </div>
+                                <div class="col text-center">
+                                    <h5 id="currentZuluDateTime">⏰</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <br>
+            <h3>Weather data</h3>
+            <hr>
+            <div class="card">
+                <script src="https://cdn.jsdelivr.net/npm/json-formatter-js@2.3.4/dist/json-formatter.umd.min.js"></script>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/json-formatter-js@2.3.4/dist/json-formatter.min.css">
+                <div class="card-header">JSON</div>
+                <div class="card-body">
+                    <div id="json-container"></div>
+                </div>
+                <script>
+                    function generate_weather_json(json_data) {
+                        if(json_data == undefined || json_data == "") {
+                            json_data = {
+                                "message": "no JSON data found",
+                            };
+                        }
+                        const formatter = new JSONFormatter(json_data, {
+                            theme: 'dark',
+                            levelCollapsed: 1
+                        });
+                        document.getElementById('json-container').innerHTML = "";
+                        document.getElementById('json-container').appendChild(formatter.render());
+                    }
+                    generate_weather_json();
+                </script>
+            </div>
+            <br>
+            <h3>About</h3>
+            <div class="card">
+                <div class="card-body">
+                    This app fetches location information from <a href="https://ipapi.co/" target="_blank">ipapi.co</a> and weather information from <a href="https://wttr.in/" target="_blank">wttr.in</a>.<br>
+                    Location is initialized to the user's current location based on IP address. Weather information is loaded and displayed. Map is loaded from <a href="https://leafletjs.com/" target="_blank">leafletjs.com</a> and <a href="https://www.openstreetmap.org/" target="_blank">www.openstreetmap.org</a> and <a href="https://carto.com/attribution/" target="_blank">carto.com</a>.<br>
+                    This app was written in JS, HTML, CSS with bootstrap and leafletjs.<br>
+                    By <a href="https://adityad.me/" target="_blank">Aditya Desai</a>.<br>
+                </div>
+            </div>
+            <br><hr>
+            <footer class="text-center">
+                Made by <a href="https://adityad.me/" target="_blank">Aditya Desai</a> | <a href="https://github.com/adityad0/weather-app" target="_blank">GitHub</a>&nbsp;|&nbsp;<a href="https://www.linkedin.com/in/adityadesaig/" target="_blank">LinkedIn</a><br>
+                Weather API: <a href="https://wttr.in/" target="_blank">wttr.in</a> | Map: <a href="https://leafletjs.com/" target="_blank">leafletjs.com</a>, <a href="https://www.openstreetmap.org/" target="_blank">www.openstreetmap.org</a> and <a href="https://carto.com/attribution/" target="_blank">carto.com</a>&nbsp;|&nbsp;IP API: <a href="https://ipapi.co/" target="_blank">ipapi.co</a>
+            </footer>
+            <hr><br><br>
+        </div>
+        <script>
+            const wwoCodes = {
+                "113": "Sunny",
+                "116": "PartlyCloudy",
+                "119": "Cloudy",
+                "122": "VeryCloudy",
+                "143": "Fog",
+                "176": "LightShowers",
+                "179": "LightSleetShowers",
+                "182": "LightSleet",
+                "185": "LightSleet",
+                "200": "ThunderyShowers",
+                "227": "LightSnow",
+                "230": "HeavySnow",
+                "248": "Fog",
+                "260": "Fog",
+                "263": "LightShowers",
+                "266": "LightRain",
+                "281": "LightSleet",
+                "284": "LightSleet",
+                "293": "LightRain",
+                "296": "LightRain",
+                "299": "HeavyShowers",
+                "302": "HeavyRain",
+                "305": "HeavyShowers",
+                "308": "HeavyRain",
+                "311": "LightSleet",
+                "314": "LightSleet",
+                "317": "LightSleet",
+                "320": "LightSnow",
+                "323": "LightSnowShowers",
+                "326": "LightSnowShowers",
+                "329": "HeavySnow",
+                "332": "HeavySnow",
+                "335": "HeavySnowShowers",
+                "338": "HeavySnow",
+                "350": "LightSleet",
+                "353": "LightShowers",
+                "356": "HeavyShowers",
+                "359": "HeavyRain",
+                "362": "LightSleetShowers",
+                "365": "LightSleetShowers",
+                "368": "LightSnowShowers",
+                "371": "HeavySnowShowers",
+                "374": "LightSleetShowers",
+                "377": "LightSleet",
+                "386": "ThunderyShowers",
+                "389": "ThunderyHeavyRain",
+                "392": "ThunderySnowShowers",
+                "395": "HeavySnowShowers",
+            }
+            const weatherEmojis = {
+                "Unknown":             "✨",
+                "Cloudy":              "☁️",
+                "Fog":                 "🌫",
+                "HeavyRain":           "🌧",
+                "HeavyShowers":        "🌧",
+                "HeavySnow":           "❄️",
+                "HeavySnowShowers":    "❄️",
+                "LightRain":           "🌦",
+                "LightShowers":        "🌦",
+                "LightSleet":          "🌧",
+                "LightSleetShowers":   "🌧",
+                "LightSnow":           "🌨",
+                "LightSnowShowers":    "🌨",
+                "PartlyCloudy":        "⛅️",
+                "Sunny":               "☀️",
+                "ThunderyHeavyRain":   "🌩",
+                "ThunderyShowers":     "⛈",
+                "ThunderySnowShowers": "⛈",
+                "VeryCloudy": "☁️",
+            }
+
+            async function get_ip_info() {
+                const apiUrl = "https://ipapi.co/json";
+                try {
+                    const response = await fetch(apiUrl);
+                    if(!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error(error);
+                    return null;
+                }
+            }
+
+            var map;
+            var marker;
+            function updateMap(lat, lon, zoom, markerTitle) {
+                if (lat == undefined || lon == undefined || lat == "" || lon == "") {
+                    lat = 0.0000;
+                    lon = 0.0000;
+                }
+                if (zoom == undefined || zoom == "") {
+                    zoom = 12;
+                }
+                if (markerTitle == undefined || markerTitle == "") {
+                    markerTitle = "Weather location";
+                }
+                const latLon = [lat, lon];
+                if (!map) {
+                    map = L.map('map').setView(latLon, zoom);
+                    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    }).addTo(map);
+                } else {
+                    map.setView(latLon, zoom);
+                }
+                if(!marker) {
+                    marker = L.marker(latLon).addTo(map).bindPopup(markerTitle).openPopup();
+                } else {
+                    marker.setLatLng(latLon).getPopup().setContent(markerTitle);
+                }
+            }
+
+            function getWeather() {
+                var location_input = document.getElementById("location");
+                var location = location_input.value;
+                if(location == "") {
+                    location = "autoip";
+                }
+                var apiUrl = `https://wttr.in/${location}?format=j1`;
+                fetch(apiUrl)
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        // console.log(data);
+                        generate_weather_json(data);
+                        location_input.value = data.nearest_area[0].areaName[0].value + ", " + data.nearest_area[0].region[0].value + ", " + data.nearest_area[0].country[0].value;
+                        // Update all fields here
+                        const locationNameElements = document.querySelectorAll('.location_name');
+                        locationNameElements.forEach(locationNameElement => {
+                            locationNameElement.innerHTML = data.nearest_area[0].areaName[0].value + ", " + data.nearest_area[0].region[0].value + ", " + data.nearest_area[0].country[0].value;
+                        });
+                        const currentTempElements = document.querySelectorAll('.current_temp');
+                        currentTempElements.forEach(currentTempElement => {
+                            currentTempElement.innerHTML = data.current_condition[0].temp_C + "°C / " + data.current_condition[0].temp_F + "°F";
+                        });
+                        document.getElementById("current_FeelsLike").innerHTML = data.current_condition[0].FeelsLikeC + "°C / " + data.current_condition[0].FeelsLikeF + "°F";
+                        document.getElementById("current_humidity").innerHTML = data.current_condition[0].humidity + "%";
+                        document.getElementById("current_wind").innerHTML = data.current_condition[0].windspeedKmph + " km/h (From " + data.current_condition[0].winddir16Point + ")";
+                        document.getElementById("current_visibility").innerHTML = data.current_condition[0].visibility + " km";
+                        document.getElementById("current_precipMM").innerHTML = data.current_condition[0].precipMM + " mm";
+                        // Fetch the icon here from weather code
+                        var weatherCode = data.current_condition[0].weatherCode;
+                        var wwoWeatherCode = wwoCodes[weatherCode];
+                        var weatherEmoji = weatherEmojis[wwoWeatherCode];
+                        document.getElementById("currentWeatherDescription").innerHTML = weatherEmoji + " " + data.current_condition[0].weatherDesc[0].value;
+                        // Update map
+                        updateMap(data.nearest_area[0].latitude, data.nearest_area[0].longitude, 12, data.nearest_area[0].areaName[0].value);
+                    })
+            }
+
+            function initTime() {
+                utcTimeDisplay = document.getElementById("currentZuluDateTime");
+                localTimeDisplay = document.getElementById("currentLocalDateTime");
+                setInterval(function () {
+                    var now = new Date();
+                    utcTimeDisplay.innerHTML = "UTC: " + now.toISOString().slice(0, 19).replace('T', ' ') + "Z";
+                    localTimeDisplay.innerHTML = "Local: " + now.toLocaleString();
+                }, 1000);
+            }
+
+            // Initialize everything on page load
+            async function initApp() {
+                updateMap(0.0000, 0.0000, 2, "Search for a location to see it on the map");
+                initTime();
+                try {
+                    var ip_location_info = await get_ip_info();
+                    document.getElementById("location").value = ip_location_info.city;
+                    getWeather();
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            }
+            initApp();
+            const weatherEmojis_fordisplay = ["☀️", "🌦️", "⛅", "🌥️", "☁️", "🌧️", "🌩️", "🌨️", "🌪️", "🌫️", "🌊", "❄️", "🌡️", "🌬️", "🌈", "🌑", "🌕"];
+            let currentIndex = 0;
+            const emojiSpan = document.getElementById("emojiSpan");
+            function updateEmoji() {
+                emojiSpan.textContent = weatherEmojis_fordisplay[currentIndex];
+                document.title = `Weather app: ${weatherEmojis_fordisplay[currentIndex]}`;
+                currentIndex = (currentIndex + 1) % weatherEmojis_fordisplay.length;
+            }
+            updateEmoji();
+            setInterval(updateEmoji, 1000);
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    </body>
+</html>
